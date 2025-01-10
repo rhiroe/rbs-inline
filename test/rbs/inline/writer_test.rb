@@ -1011,7 +1011,7 @@ class RBS::Inline::WriterTest < Minitest::Test
 
     assert_equal <<~RBS, output
       # Account record
-      class Account < Struct[untyped]
+      class Account < Struct[Integer | String]
         attr_accessor id(): Integer
 
         attr_accessor email(): String
@@ -1029,7 +1029,7 @@ class RBS::Inline::WriterTest < Minitest::Test
         end
       end
 
-      class Item < Struct[untyped]
+      class Item < Struct[String | Integer]
         attr_accessor sku(): String
 
         attr_accessor price(): Integer
@@ -1041,7 +1041,7 @@ class RBS::Inline::WriterTest < Minitest::Test
       # @rbs %a{rbs-inline:readonly-attributes=true}
       %a{rbs-inline:new-args=required}
       %a{rbs-inline:readonly-attributes=true}
-      class User < Struct[untyped]
+      class User < Struct[String]
         attr_reader name(): String
 
         def self.new: (String name) -> instance
@@ -1109,7 +1109,7 @@ class RBS::Inline::WriterTest < Minitest::Test
 
     assert_equal <<~RBS, output
       class Foo
-        class Bar < Struct[untyped]
+        class Bar < Struct[__todo__]
           attr_accessor foo(): __todo__
 
           attr_accessor bar(): __todo__
@@ -1118,7 +1118,7 @@ class RBS::Inline::WriterTest < Minitest::Test
                       | (?foo: __todo__, ?bar: __todo__) -> instance
         end
 
-        class Baz < Struct[untyped]
+        class Baz < Struct[__todo__]
           attr_accessor foo(): __todo__
 
           attr_accessor bar(): __todo__
@@ -1127,7 +1127,7 @@ class RBS::Inline::WriterTest < Minitest::Test
                       | ({ ?foo: __todo__, ?bar: __todo__ }) -> instance
         end
 
-        class Qux < Struct[untyped]
+        class Qux < Struct[__todo__]
           attr_accessor foo(): __todo__
 
           attr_accessor bar(): __todo__
@@ -1137,7 +1137,7 @@ class RBS::Inline::WriterTest < Minitest::Test
 
         # @rbs %a{rbs-inline:readonly-attributes=true}
         %a{rbs-inline:readonly-attributes=true}
-        class Quux < Struct[untyped]
+        class Quux < Struct[__todo__]
           attr_reader foo(): __todo__
 
           attr_reader bar(): __todo__
