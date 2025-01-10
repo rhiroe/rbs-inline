@@ -3,4 +3,6 @@
 require "rbs/inline"
 require "rbs/inline/cli"
 
-exit RBS::Inline::CLI.new().run(ARGV)
+opt =  File.read('.rbs-inline').split if File.exist?('.rbs-inline')
+
+exit RBS::Inline::CLI.new().run(opt + ARGV)
