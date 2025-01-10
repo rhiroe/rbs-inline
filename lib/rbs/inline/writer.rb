@@ -15,17 +15,22 @@ module RBS
       attr_reader :output #: String
       attr_reader :writer #: RBS::Writer
 
+      attr_accessor :default_type #: Types::t
+
       # @rbs buffer: String
       def initialize(buffer = +"") #: void
         @output = buffer
         @writer = RBS::Writer.new(out: StringIO.new(buffer))
+        @default_type = Types::Bases::Any.new(location: nil)
       end
 
       # @rbs uses: Array[AST::Annotations::Use]
       # @rbs decls: Array[AST::Declarations::t]
       # @rbs rbs_decls: Array[RBS::AST::Declarations::t]
-      def self.write(uses, decls, rbs_decls) #: void
+      # @rbs &: ? (Writer) -> void
+      def self.write(uses, decls, rbs_decls, &) #: void
         writer = Writer.new()
+        yield writer if block_given?
         writer.write(uses, decls, rbs_decls)
         writer.output
       end
@@ -480,7 +485,7 @@ module RBS
           rbs << RBS::AST::Members::MethodDefinition.new(
             name: member.method_name,
             kind: kind,
-            overloads: member.method_overloads,
+            overloads: member.method_overloads(default_type),
             annotations: member.method_annotations,
             location: nil,
             comment: comment,
@@ -505,7 +510,7 @@ module RBS
             rbs << m
           end
         when AST::Members::RubyAttr
-          if m = member.rbs
+          if m = member.rbs(default_type)
             rbs.concat m
           end
         when AST::Members::RubyPrivate

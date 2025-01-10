@@ -5,10 +5,10 @@ require "test_helper"
 class RBS::Inline::WriterTest < Minitest::Test
   include RBS::Inline
 
-  def translate(src, opt_in: true)
+  def translate(src, opt_in: true, &block)
     src = "# rbs_inline: enabled\n\n" + src
     uses, decls, rbs_decls = Parser.parse(Prism.parse(src, filepath: "a.rb"), opt_in: opt_in)
-    Writer.write(uses, decls, rbs_decls)
+    Writer.write(uses, decls, rbs_decls, &block)
   end
 
   def test_method_type
@@ -1046,6 +1046,27 @@ class RBS::Inline::WriterTest < Minitest::Test
 
         def self.new: (String name) -> instance
                     | (name: String) -> instance
+      end
+    RBS
+  end
+
+  def test_method_type__untyped_customize
+    output = translate(<<~RUBY) do
+      class Foo
+        def f
+        end
+
+        attr_reader :foo
+      end
+    RUBY
+      _1.default_type = RBS::Parser::parse_type("fixme")
+    end
+
+    assert_equal <<~RBS, output
+      class Foo
+        def f: () -> fixme
+
+        attr_reader foo: fixme
       end
     RBS
   end
